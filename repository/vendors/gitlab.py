@@ -2,10 +2,8 @@ from .utils import VendorInterface
 import gitlab
 import markdown
 from urllib.parse import urlparse, urljoin
-from django.conf import settings
 import pydash as dsh
 
-# IDEA: isolate from Django, as a standalone module? The only dependency is the API key in the settings.
 
 class GitlabRepository(VendorInterface):
 
@@ -13,22 +11,25 @@ class GitlabRepository(VendorInterface):
     host = None
     namespace = None
     instance = None
+    settings = None
 
-    def __init__(self, url, **kwargs):
+    def __init__(self, url, settings={}, **kwargs):
 
         self.url = url
+        self.settings = settings
+        debug_mode = kwargs['debug'] if 'debug' in kwargs else False
         parsed_url = urlparse(self.url)
 
         # Testing HTTPS
         # TODO: handle SSH as well (with public key kwarg)
-        if not settings.DEBUG:
+        if not debug_mode:
             if parsed_url.scheme != 'https':
                 raise Exception("Repository must use HTTPS")
 
         self.host = parsed_url.scheme + '://' + parsed_url.netloc
         self.namespace = parsed_url.path[1:]  # Stripping the first slash
 
-        self.instance = gitlab.Gitlab(self.host, private_token=settings.GITLAB_API_TOKEN)
+        self.instance = gitlab.Gitlab(self.host, private_token=self.settings['GITLAB_API_TOKEN'])
         # TODO: test if host is indeed a Gitlab server
         # TODO: move token arg explicitly in Repository __init__
 
@@ -68,9 +69,9 @@ class GitlabRepository(VendorInterface):
         project = self.instance.projects.get(self.namespace)
         for commit in project.commits.list():
             c = commit.attributes
-            commit_rel_url = settings.GITLAB_URL_COMMIT.format(namespace=self.namespace,
+            commit_rel_url = self.settings['GITLAB_URL_COMMIT'].format(namespace=self.namespace,
                                                                sha=c['id'])
-            commit_abs_url = '{0}{1}'.format(settings.GITLAB_URL, commit_rel_url)
+            commit_abs_url = '{0}{1}'.format(self.settings['GITLAB_URL'], commit_rel_url)
             tmp = {}
             tmp['title'] = c['title']
             tmp['created_at'] = c['created_at']  # There's also committed_at and authored_at, not sure which one to choose
@@ -83,9 +84,9 @@ class GitlabRepository(VendorInterface):
         project = self.instance.projects.get(self.namespace)
         for tag in project.tags.list():
             t = tag.attributes
-            tag_rel_url = settings.GITLAB_URL_TAG.format(namespace=self.namespace,
+            tag_rel_url = self.settings['GITLAB_URL_TAG'].format(namespace=self.namespace,
                                                          name=t['name'])
-            tag_abs_url = '{0}{1}'.format(settings.GITLAB_URL, tag_rel_url)
+            tag_abs_url = '{0}{1}'.format(self.settings['GITLAB_URL'], tag_rel_url)
             tmp = {}
             tmp['name'] = t['name']
             tmp['created_at'] = t['commit']['created_at']  # A tag is tied to a commit
@@ -94,10 +95,10 @@ class GitlabRepository(VendorInterface):
         return latest_tags
 
     def get_archive_url(self, extension='zip', ref='master'):
-        path = settings.GITLAB_URL_ARCHIVE.format(namespace=self.namespace,
+        path = self.settings['GITLAB_URL_ARCHIVE'].format(namespace=self.namespace,
                                                  extension=extension,
                                                  ref=ref)
-        url = '{}{}'.format(settings.GITLAB_URL, path)
+        url = '{}{}'.format(self.settings['GITLAB_URL'], path)
         return url
 
     def get_commits_contributors(self):
