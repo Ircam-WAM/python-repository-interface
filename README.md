@@ -1,2 +1,11 @@
 # python-repository-interface
-Abstract interface with repository vendors (Gitlab, GitHub, etc.)
+
+Interface with several repository vendors for common operations.
+
+## Vendors
+
+  - Gitlab
+
+## Operations
+
+See [repository/repository.py](repository/repository.py) methods.
