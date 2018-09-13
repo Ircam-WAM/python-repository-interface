@@ -1,4 +1,5 @@
-from .vendors import *
+from .vendors import gitlab, github
+
 
 class Repository:
 
@@ -11,7 +12,7 @@ class Repository:
     # Supported vendors
     vendors = [
         ('gitlab', gitlab.GitlabRepository),
-        #('github', github.GithubRepository)
+        ('github', github.GithubRepository)
     ]
 
     def __init__(self, url, vendor, settings={}, debug=False):

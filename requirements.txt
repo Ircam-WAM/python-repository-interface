@@ -1,4 +1,5 @@
 python-gitlab
+PyGithub
 markdown
 pydash
 -e .
