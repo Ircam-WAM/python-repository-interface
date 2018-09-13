@@ -29,9 +29,8 @@ class GitlabRepository(VendorInterface):
         self.host = parsed_url.scheme + '://' + parsed_url.netloc
         self.namespace = parsed_url.path[1:]  # Stripping the first slash
 
-        self.instance = gitlab.Gitlab(self.host, private_token=self.settings['GITLAB_API_TOKEN'])
+        self.instance = gitlab.Gitlab(self.host, private_token=self.settings['API_TOKEN'])
         # TODO: test if host is indeed a Gitlab server
-        # TODO: move token arg explicitly in Repository __init__
 
     def _get_user(self, username=None):
         # Gets the Gitlab user tied to a username.
@@ -65,7 +64,6 @@ class GitlabRepository(VendorInterface):
 
     def get_latest_commits(self):
         latest_commits = []
-        print(self.namespace)
         project = self.instance.projects.get(self.namespace)
         for commit in project.commits.list():
             c = commit.attributes
