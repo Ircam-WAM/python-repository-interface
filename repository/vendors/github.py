@@ -53,7 +53,7 @@ class GithubRepository(VendorInterface):
 
         import base64
         f = base64.standard_b64decode(f)
-        markdown_content = f
+        markdown_content = f.decode('utf-8')
         html_content = markdown.markdown(markdown_content)
 
         return html_content
