@@ -31,8 +31,13 @@ class Repository:
         if not self.vendor_client:
             raise Exception("Repository vendor is not supported")
 
-    def get_instance(self):
-        return self.vendor_instance.get_instance()
+    def get_repository_instance(self):
+        # Vendor instance to act on the repository
+        return self.vendor_instance.get_repository_instance()
+
+    def get_host_instance(self):
+        # Vendor instance to act on the host
+        return self.vendor_instance.get_host_instance()
 
     def get_readme(self):
         return self.vendor_instance.get_readme()

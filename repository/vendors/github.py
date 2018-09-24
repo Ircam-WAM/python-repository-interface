@@ -10,7 +10,8 @@ class GithubRepository(VendorInterface):
     url = None
     host = None
     namespace = None
-    instance = None
+    host_instance = None
+    repository_instance = None
     settings = None
 
     def __init__(self, url, settings={}, **kwargs):
@@ -29,7 +30,8 @@ class GithubRepository(VendorInterface):
         self.host = parsed_url.scheme + '://' + parsed_url.netloc
         self.namespace = parsed_url.path[1:]  # Stripping the first slash
 
-        self.instance = Github(self.settings['API_TOKEN'])
+        self.host_instance = Github(self.settings['API_TOKEN'])
+        self.repository_instance = self.host_instance.get_repo(self.namespace)
 
     def _get_user(self, username=None):
         return self.instance.get_user(username)
@@ -39,12 +41,15 @@ class GithubRepository(VendorInterface):
         display_name = u.name if u.name != '' else u.login
         return display_name
 
-    def get_instance(self):
-        return self.instance
+    def get_host_instance(self):
+        return self.host_instance
+
+    def get_repository_instance(self):
+        return self.repository_instance
 
     def get_readme(self):
 
-        repository = self.instance.get_repo(self.namespace)
+        repository = self.repository_instance
         f = repository.get_file_contents('README.md', ref='master')
         f = f.content
         # TODO: scan for READMEs (md, rst, txt)
@@ -70,7 +75,7 @@ class GithubRepository(VendorInterface):
     def get_latest_commits(self):
 
         latest_commits = []
-        repository = self.instance.get_repo(self.namespace)
+        repository = self.repository_instance
         commits = repository.get_commits()
 
         if commits.totalCount < self.settings['LATEST_COMMITS_LIMIT']:
@@ -91,7 +96,7 @@ class GithubRepository(VendorInterface):
     def get_latest_tags(self):
 
         latest_tags = []
-        repository = self.instance.get_repo(self.namespace)
+        repository = self.repository_instance
         tags = repository.get_tags()
 
         if tags.totalCount < self.settings['LATEST_TAGS_LIMIT']:

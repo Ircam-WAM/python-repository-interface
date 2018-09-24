@@ -10,7 +10,8 @@ class GitlabRepository(VendorInterface):
     url = None
     host = None
     namespace = None
-    instance = None
+    host_instance = None
+    repository_instance = None
     settings = None
 
     def __init__(self, url, settings={}, **kwargs):
@@ -29,22 +30,26 @@ class GitlabRepository(VendorInterface):
         self.host = parsed_url.scheme + '://' + parsed_url.netloc
         self.namespace = parsed_url.path[1:]  # Stripping the first slash
 
-        self.instance = gitlab.Gitlab(self.host, private_token=self.settings['API_TOKEN'])
+        self.host_instance = gitlab.Gitlab(self.host, private_token=self.settings['API_TOKEN'])
+        self.repository_instance = self.host_instance.projects.get(self.namespace)
         # TODO: test if host is indeed a Gitlab server
 
     def _get_user(self, username=None):
         # Gets the Gitlab user tied to a username.
         # Used mostly to get the email.
-        user = self.instance.users.list(username=username)
+        user = self.host_instance.users.list(username=username)
         user = user[0]
         return user
 
-    def get_instance(self):
-        return self.instance
+    def get_host_instance(self):
+        return self.host_instance
+
+    def get_repository_instance(self):
+        return self.repository_instance
 
     def get_readme(self):
 
-        project = self.instance.projects.get(self.namespace)
+        project = self.repository_instance
         f = project.files.get(file_path='README.md', ref='master')  # TODO: scan for READMEs (md, rst, txt)
         # IDEA: let user choose file and branch in the project settings
 
@@ -64,7 +69,7 @@ class GitlabRepository(VendorInterface):
 
     def get_latest_commits(self):
         latest_commits = []
-        project = self.instance.projects.get(self.namespace)
+        project = self.repository_instance
         for commit in project.commits.list():
             c = commit.attributes
             commit_rel_url = self.settings['GITLAB_URL_COMMIT'].format(namespace=self.namespace,
@@ -79,7 +84,7 @@ class GitlabRepository(VendorInterface):
 
     def get_latest_tags(self):
         latest_tags = []
-        project = self.instance.projects.get(self.namespace)
+        project = self.repository_instance
         for tag in project.tags.list():
             t = tag.attributes
             tag_rel_url = self.settings['GITLAB_URL_TAG'].format(namespace=self.namespace,
@@ -101,7 +106,7 @@ class GitlabRepository(VendorInterface):
 
     def get_commits_contributors(self):
 
-        project = self.instance.projects.get(self.namespace)
+        project = self.repository_instance
         contributors = project.repository_contributors()
 
         # Example response:
@@ -133,7 +138,7 @@ class GitlabRepository(VendorInterface):
         # NOTE: only counting issues authors
         # TODO: include issues participants
 
-        project = self.instance.projects.get(self.namespace)
+        project = self.repository_instance
         issues = project.issues.list()
         issues_authors = [issue.author for issue in issues]
 
@@ -168,7 +173,7 @@ class GitlabRepository(VendorInterface):
 
     def get_members(self):
 
-        project = self.instance.projects.get(self.namespace)
+        project = self.repository_instance
         contributors = project.members.list()
 
         # Example response (only relevant part):
