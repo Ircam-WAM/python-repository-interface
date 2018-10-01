@@ -154,7 +154,7 @@ class GithubRepository(VendorInterface):
         # NOTE: only counting issues authors
         # TODO: include issues participants
 
-        repo = self.instance.get_repo(self.namespace)
+        repo = self.repository_instance
         issues = repo.get_issues()
         issues_authors = [issue.user for issue in issues]
 
@@ -192,3 +192,15 @@ class GithubRepository(VendorInterface):
         # Before we allow users to specify a personal token, returning an empty array
         # repo.get_collaborators()
         return []
+
+    def get_languages(self):
+
+        repo = self.repository_instance
+        languages = repo.get_languages()  # Returns {lang: bytes}
+                                          # and not {lang: %} like GitLab
+
+        # Returning % instead of bytes for each languages
+        total = dsh.collections.reduce_(languages, lambda m, v, k: v + m, 0)
+        ret = dsh.objects.map_values(languages, lambda v: round(v * 100 / total))
+
+        return ret

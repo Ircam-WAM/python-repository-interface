@@ -199,3 +199,10 @@ class GitlabRepository(VendorInterface):
             ret.append(tmp)
 
         return ret
+
+    def get_languages(self):
+
+        project = self.repository_instance
+        ret = project.languages()
+
+        return ret

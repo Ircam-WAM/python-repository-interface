@@ -62,3 +62,6 @@ class Repository:
 
     def get_members(self):
         return self.vendor_instance.get_members()
+
+    def get_languages(self):
+        return self.vendor_instance.get_languages()
