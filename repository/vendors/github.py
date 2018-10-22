@@ -3,7 +3,7 @@ from github import Github
 import markdown
 from urllib.parse import urlparse, urljoin
 import pydash as dsh
-
+import base64
 
 class GithubRepository(VendorInterface):
 
@@ -50,16 +50,17 @@ class GithubRepository(VendorInterface):
     def get_readme(self):
 
         repository = self.repository_instance
-        f = repository.get_file_contents('README.md', ref='master')
-        f = f.content
-        # TODO: scan for READMEs (md, rst, txt)
-        # IDEA: let user choose file and branch in the project settings
-        # IDEA: checkout the defined main branch of the repo instead of master
-
-        import base64
-        f = base64.standard_b64decode(f)
-        markdown_content = f.decode('utf-8')
-        html_content = markdown.markdown(markdown_content)
+        try:
+            # TODO: scan for READMEs (md, rst, txt)
+            # IDEA: let user choose file and branch in the project settings
+            # IDEA: checkout the defined main branch of the repo instead of master
+            f = repository.get_file_contents('README.md', ref='master')
+            f = f.content
+            f = base64.standard_b64decode(f)
+            markdown_content = f.decode('utf-8')
+            html_content = markdown.markdown(markdown_content)
+        except Exception:
+            html_content = ''
 
         return html_content
 

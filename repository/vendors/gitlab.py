@@ -50,11 +50,14 @@ class GitlabRepository(VendorInterface):
     def get_readme(self):
 
         project = self.repository_instance
-        f = project.files.get(file_path='README.md', ref='master')  # TODO: scan for READMEs (md, rst, txt)
-        # IDEA: let user choose file and branch in the project settings
 
-        markdown_content = f.decode().decode("utf-8")
-        html_content = markdown.markdown(markdown_content)
+        try:
+            f = project.files.get(file_path='README.md', ref='master')  # TODO: scan for READMEs (md, rst, txt)
+            # IDEA: let user choose file and branch in the project settings
+            markdown_content = f.decode().decode("utf-8")
+            html_content = markdown.markdown(markdown_content)
+        except Exception:
+            html_content = ''
 
         return html_content
 
