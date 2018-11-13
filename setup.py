@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-from organization_themes import __version__
 import subprocess
 
 def get_long_desc():
