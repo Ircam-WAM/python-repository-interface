@@ -73,7 +73,14 @@ class GitlabRepository(VendorInterface):
     def get_latest_commits(self):
         latest_commits = []
         project = self.repository_instance
-        for commit in project.commits.list():
+        commits = project.commits.list()
+
+        if len(commits) < self.settings['LATEST_COMMITS_LIMIT']:
+            limit = len(commits)
+        else:
+            limit = self.settings['LATEST_COMMITS_LIMIT']
+
+        for commit in commits[:limit]:
             c = commit.attributes
             commit_rel_url = self.settings['GITLAB_URL_COMMIT'].format(namespace=self.namespace,
                                                                sha=c['id'])
@@ -88,7 +95,14 @@ class GitlabRepository(VendorInterface):
     def get_latest_tags(self):
         latest_tags = []
         project = self.repository_instance
-        for tag in project.tags.list():
+        tags = project.tags.list()
+
+        if len(tags) < self.settings['LATEST_TAGS_LIMIT']:
+            limit = len(tags)
+        else:
+            limit = self.settings['LATEST_TAGS_LIMIT']
+
+        for tag in tags[:limit]:
             t = tag.attributes
             tag_rel_url = self.settings['GITLAB_URL_TAG'].format(namespace=self.namespace,
                                                          name=t['name'])
