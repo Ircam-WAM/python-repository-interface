@@ -108,7 +108,8 @@ class GithubRepository(VendorInterface):
         for tag in tags[:limit]:
             tmp = {}
             tmp['name'] = tag.name
-            tmp['created_at'] = tag.commit.author.date
+            tmp['created_at'] = tag.commit.commit.author.date  # Because tag.commit.author returns a NamedUser
+                                                               # whereas tag.commit.commit.author returns a GitAuthor
             tmp['url'] = tag.commit.html_url
             latest_tags.append(tmp)
         return latest_tags
