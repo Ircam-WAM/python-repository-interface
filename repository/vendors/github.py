@@ -34,10 +34,10 @@ class GithubRepository(VendorInterface):
         self.repository_instance = self.host_instance.get_repo(self.namespace)
 
     def _get_user(self, username=None):
-        return self.instance.get_user(username)
+        return self.host_instance.get_user(username)
 
     def _get_user_name(self, username=None):
-        u = self.instance.get_user(username)
+        u = self.host_instance.get_user(username)
         display_name = u.name if u.name != '' else u.login
         return display_name
 
@@ -123,7 +123,7 @@ class GithubRepository(VendorInterface):
 
     def get_commits_contributors(self):
 
-        repo = self.instance.get_repo(self.namespace)
+        repo = self.host_instance.get_repo(self.namespace)
         contributors = repo.get_stats_contributors()
 
         # Example response:
