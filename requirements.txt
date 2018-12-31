@@ -1,5 +1,6 @@
-python-gitlab
-PyGithub
+python-gitlab==1.7.0
+PyGithub==1.43.3
 markdown==2.6.11
+docutils==0.14
 pydash
 -e .

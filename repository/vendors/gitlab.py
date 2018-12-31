@@ -1,11 +1,10 @@
-from .utils import VendorInterface
+from .utils import VendorInterface, VendorMixin
 import gitlab
-import markdown
 from urllib.parse import urlparse, urljoin
 import pydash as dsh
 
 
-class GitlabRepository(VendorInterface):
+class GitlabRepository(VendorInterface, VendorMixin):
 
     url = None
     host = None
@@ -51,13 +50,11 @@ class GitlabRepository(VendorInterface):
 
         project = self.repository_instance
 
-        try:
-            f = project.files.get(file_path='README.md', ref='master')  # TODO: scan for READMEs (md, rst, txt)
-            # IDEA: let user choose file and branch in the project settings
-            markdown_content = f.decode().decode("utf-8")
-            html_content = markdown.markdown(markdown_content)
-        except Exception:
-            html_content = ''
+        def find_func(path):
+            f = project.files.get(file_path=path, ref='master')
+            return f.decode().decode("utf-8")
+
+        html_content = super()._find_readme(find_func, readme_tests=self.settings['README_TESTS'])
 
         return html_content
 

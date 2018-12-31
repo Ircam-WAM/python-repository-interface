@@ -1,11 +1,11 @@
-from .utils import VendorInterface
+from .utils import VendorInterface, VendorMixin
 from github import Github
-import markdown
 from urllib.parse import urlparse, urljoin
 import pydash as dsh
 import base64
 
-class GithubRepository(VendorInterface):
+
+class GithubRepository(VendorInterface, VendorMixin):
 
     url = None
     host = None
@@ -50,17 +50,14 @@ class GithubRepository(VendorInterface):
     def get_readme(self):
 
         repository = self.repository_instance
-        try:
-            # TODO: scan for READMEs (md, rst, txt)
-            # IDEA: let user choose file and branch in the project settings
-            # IDEA: checkout the defined main branch of the repo instead of master
-            f = repository.get_file_contents('README.md', ref='master')
+
+        def find_func(path):
+            f = repository.get_file_contents(path, ref='master')
             f = f.content
             f = base64.standard_b64decode(f)
-            markdown_content = f.decode('utf-8')
-            html_content = markdown.markdown(markdown_content)
-        except Exception:
-            html_content = ''
+            return f.decode('utf-8')
+
+        html_content = super()._find_readme(find_func, readme_tests=self.settings['README_TESTS'])
 
         return html_content
 

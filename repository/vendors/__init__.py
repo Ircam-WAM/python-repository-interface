@@ -1,1 +1,1 @@
-__all__ = ["gitlab"]
+__all__ = ["gitlab", "github"]
