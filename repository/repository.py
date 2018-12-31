@@ -65,3 +65,6 @@ class Repository:
 
     def get_languages(self):
         return self.vendor_instance.get_languages()
+
+    def get_edit_url(self, path):
+        return self.vendor_instance.get_edit_url(path)

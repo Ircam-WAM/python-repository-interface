@@ -54,9 +54,9 @@ class GitlabRepository(VendorInterface, VendorMixin):
             f = project.files.get(file_path=path, ref='master')
             return f.decode().decode("utf-8")
 
-        html_content = super()._find_readme(find_func, readme_tests=self.settings['README_TESTS'])
+        path, html_content = super()._find_readme(find_func, readme_tests=self.settings['README_TESTS'])
 
-        return html_content
+        return (path, html_content)
 
     def get_summary(self):
 
@@ -220,3 +220,10 @@ class GitlabRepository(VendorInterface, VendorMixin):
         ret = project.languages()
 
         return ret
+
+    def get_edit_url(self, path):
+
+        path = self.settings['GITLAB_URL_EDIT'].format(namespace=self.namespace,
+                                                       path=path)
+
+        return '{}{}'.format(self.host, path)

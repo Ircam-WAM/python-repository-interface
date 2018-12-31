@@ -24,10 +24,12 @@ class VendorMixin:
         html_content = ''
         raw_content = ''
         content_type = None
+        path = None
 
         for file, file_type in readme_tests:
             try:
                 raw_content = vendor_method(file)
+                path = file
             except Exception:
                 file = None
             else:
@@ -41,4 +43,4 @@ class VendorMixin:
         elif content_type == 'raw':
             html_content = '<br>'.join(raw_content.split('\n'))  # \n to <br>
 
-        return html_content
+        return (path, html_content)

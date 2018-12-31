@@ -57,9 +57,9 @@ class GithubRepository(VendorInterface, VendorMixin):
             f = base64.standard_b64decode(f)
             return f.decode('utf-8')
 
-        html_content = super()._find_readme(find_func, readme_tests=self.settings['README_TESTS'])
+        path, html_content = super()._find_readme(find_func, readme_tests=self.settings['README_TESTS'])
 
-        return html_content
+        return (path, html_content)
 
     def get_summary(self):
 
@@ -203,3 +203,10 @@ class GithubRepository(VendorInterface, VendorMixin):
         ret = dsh.objects.map_values(languages, lambda v: round(v * 100 / total))
 
         return ret
+
+    def get_edit_url(self, path):
+
+        path = self.settings['GITHUB_URL_EDIT'].format(namespace=self.namespace,
+                                                       path=path)
+
+        return '{}{}'.format(self.host, path)
