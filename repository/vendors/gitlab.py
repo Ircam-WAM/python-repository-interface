@@ -224,6 +224,7 @@ class GitlabRepository(VendorInterface, VendorMixin):
     def get_edit_url(self, path):
 
         path = self.settings['GITLAB_URL_EDIT'].format(namespace=self.namespace,
+                                                       branch="master",
                                                        path=path)
 
         return '{}{}'.format(self.host, path)

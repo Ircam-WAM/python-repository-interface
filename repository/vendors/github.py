@@ -207,6 +207,7 @@ class GithubRepository(VendorInterface, VendorMixin):
     def get_edit_url(self, path):
 
         path = self.settings['GITHUB_URL_EDIT'].format(namespace=self.namespace,
+                                                       branch="master",
                                                        path=path)
 
         return '{}{}'.format(self.host, path)
