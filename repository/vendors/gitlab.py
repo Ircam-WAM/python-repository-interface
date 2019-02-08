@@ -61,10 +61,9 @@ class GitlabRepository(VendorInterface, VendorMixin):
     def get_summary(self):
 
         summary = {
-            'latest_commits': self.get_latest_commits(),
+            'latest_commits': self.get_latest_commits() if not self.private else None,
             'latest_tags': self.get_latest_tags()
         }
-
         return summary
 
     def get_latest_commits(self):
@@ -107,7 +106,7 @@ class GitlabRepository(VendorInterface, VendorMixin):
             tmp = {}
             tmp['name'] = t['name']
             tmp['created_at'] = t['commit']['created_at']  # A tag is tied to a commit
-            tmp['url'] = tag_abs_url
+            tmp['url'] = tag_abs_url if not self.private else None
             latest_tags.append(tmp)
         return latest_tags
 

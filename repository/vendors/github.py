@@ -64,7 +64,7 @@ class GithubRepository(VendorInterface, VendorMixin):
     def get_summary(self):
 
         summary = {
-            'latest_commits': self.get_latest_commits(),
+            'latest_commits': self.get_latest_commits() if not self.private else None,
             'latest_tags': self.get_latest_tags()
         }
 
@@ -107,7 +107,7 @@ class GithubRepository(VendorInterface, VendorMixin):
             tmp['name'] = tag.name
             tmp['created_at'] = tag.commit.commit.author.date  # Because tag.commit.author returns a NamedUser
                                                                # whereas tag.commit.commit.author returns a GitAuthor
-            tmp['url'] = tag.commit.html_url
+            tmp['url'] = tag.commit.html_url if not self.private else None
             latest_tags.append(tmp)
         return latest_tags
 
