@@ -211,3 +211,7 @@ class GithubRepository(VendorInterface, VendorMixin):
                                                        path=path)
 
         return '{}{}'.format(self.host, path)
+
+    @property
+    def private(self):
+        return self.repository_instance.private

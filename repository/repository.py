@@ -68,3 +68,7 @@ class Repository:
 
     def get_edit_url(self, path):
         return self.vendor_instance.get_edit_url(path)
+
+    @property
+    def private(self):
+        return self.vendor_instance.private

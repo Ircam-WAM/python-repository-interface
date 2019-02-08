@@ -228,3 +228,7 @@ class GitlabRepository(VendorInterface, VendorMixin):
                                                        path=path)
 
         return '{}{}'.format(self.host, path)
+
+    @property
+    def private(self):
+        return True if self.repository_instance.visibility == 'private' else False
