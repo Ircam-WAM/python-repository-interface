@@ -80,7 +80,7 @@ class GitlabRepository(VendorInterface, VendorMixin):
             c = commit.attributes
             commit_rel_url = self.settings['GITLAB_URL_COMMIT'].format(namespace=self.namespace,
                                                                sha=c['id'])
-            commit_abs_url = '{0}{1}'.format(self.settings['GITLAB_URL'], commit_rel_url)
+            commit_abs_url = '{0}{1}'.format(self.host, commit_rel_url)
             tmp = {}
             tmp['title'] = c['title']
             tmp['created_at'] = c['created_at']  # There's also committed_at and authored_at, not sure which one to choose
@@ -102,7 +102,7 @@ class GitlabRepository(VendorInterface, VendorMixin):
             t = tag.attributes
             tag_rel_url = self.settings['GITLAB_URL_TAG'].format(namespace=self.namespace,
                                                          name=t['name'])
-            tag_abs_url = '{0}{1}'.format(self.settings['GITLAB_URL'], tag_rel_url)
+            tag_abs_url = '{0}{1}'.format(self.host, tag_rel_url)
             tmp = {}
             tmp['name'] = t['name']
             tmp['created_at'] = t['commit']['created_at']  # A tag is tied to a commit
@@ -114,7 +114,7 @@ class GitlabRepository(VendorInterface, VendorMixin):
         path = self.settings['GITLAB_URL_ARCHIVE'].format(namespace=self.namespace,
                                                  extension=extension,
                                                  ref=ref)
-        url = '{}{}'.format(self.settings['GITLAB_URL'], path)
+        url = '{}{}'.format(self.host, path)
         return url
 
     def get_commits_contributors(self):

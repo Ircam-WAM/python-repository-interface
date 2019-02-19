@@ -103,11 +103,14 @@ class GithubRepository(VendorInterface, VendorMixin):
             limit = self.settings['LATEST_TAGS_LIMIT']
 
         for tag in tags[:limit]:
+            tag_rel_url = self.settings['GITHUB_URL_TAG'].format(namespace=self.namespace,
+                                                                 name=tag.name)
+            tag_abs_url = '{0}{1}'.format(self.settings['GITHUB_URL'], tag_rel_url)
             tmp = {}
             tmp['name'] = tag.name
             tmp['created_at'] = tag.commit.commit.author.date  # Because tag.commit.author returns a NamedUser
                                                                # whereas tag.commit.commit.author returns a GitAuthor
-            tmp['url'] = tag.commit.html_url if not self.private else None
+            tmp['url'] = tag_abs_url if not self.private else None
             latest_tags.append(tmp)
         return latest_tags
 
