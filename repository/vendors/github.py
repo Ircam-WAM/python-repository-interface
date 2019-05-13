@@ -1,18 +1,18 @@
-from .utils import VendorInterface
+from repository.component import implements, interfacedoc
+from repository.api import IRepository
+from repository.core import Repository
+
 from github import Github
 import markdown
 from urllib.parse import urlparse, urljoin
 import pydash as dsh
 
+__all__ = ['GithubRepository']
 
-class GithubRepository(VendorInterface):
 
-    url = None
-    host = None
-    namespace = None
-    host_instance = None
-    repository_instance = None
-    settings = None
+class GithubRepository(Repository):
+
+    implements(IRepository)
 
     def __init__(self, url, settings={}, **kwargs):
 
@@ -32,6 +32,17 @@ class GithubRepository(VendorInterface):
 
         self.host_instance = Github(self.settings['API_TOKEN'])
         self.repository_instance = self.host_instance.get_repo(self.namespace)
+
+
+    @staticmethod
+    @interfacedoc
+    def id():
+        return 'github'
+
+    @staticmethod
+    @interfacedoc
+    def name():
+        return 'GitHub'
 
     def _get_user(self, username=None):
         return self.instance.get_user(username)

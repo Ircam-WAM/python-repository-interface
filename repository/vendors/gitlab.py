@@ -1,11 +1,18 @@
-from .utils import VendorInterface
+from repository.component import implements, interfacedoc
+from repository.api import IRepository
+from repository.core import Repository
+
 import gitlab
 import markdown
 from urllib.parse import urlparse, urljoin
 import pydash as dsh
 
+#__all__ = ['GitlabRepository']
 
-class GitlabRepository(VendorInterface):
+
+class GitlabRepository(Repository):
+
+    implements(IRepository)
 
     url = None
     host = None
@@ -15,7 +22,7 @@ class GitlabRepository(VendorInterface):
     settings = None
 
     def __init__(self, url, settings={}, **kwargs):
-
+        super(GitLabRepository, self).__init__(url, settings, **kwargs)
         self.url = url
         self.settings = settings
         debug_mode = kwargs['debug'] if 'debug' in kwargs else False
@@ -33,6 +40,17 @@ class GitlabRepository(VendorInterface):
         self.host_instance = gitlab.Gitlab(self.host, private_token=self.settings['API_TOKEN'])
         self.repository_instance = self.host_instance.projects.get(self.namespace)
         # TODO: test if host is indeed a Gitlab server
+
+    @staticmethod
+    @interfacedoc
+    def id():
+        return 'gitlab'
+
+    @staticmethod
+    @interfacedoc
+    def name():
+        return 'GitLab'
+
 
     def _get_user(self, username=None):
         # Gets the Gitlab user tied to a username.
@@ -110,7 +128,7 @@ class GitlabRepository(VendorInterface):
         contributors = project.repository_contributors()
 
         # Example response:
-        # [{'name': 'Raphaël Voyazopoulos', 'email': "
+        # [{'name': 'Raphael Voyazopoulos', 'email': "
         #  "'raphael.voyazopoulos@ircam.fr', 'commits': 2, 'additions': 0, 'deletions': "
         #  "0}, {'name': 'johndoe', 'email': 'johndoe@yopmail.com', 'commits': 1, "
         #  "'additions': 0, 'deletions': 0}]
