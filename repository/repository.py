@@ -72,3 +72,6 @@ class Repository:
     @property
     def private(self):
         return self.vendor_instance.private
+
+    def delete(self):
+        return self.vendor_instance.delete()

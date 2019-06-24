@@ -218,3 +218,7 @@ class GithubRepository(VendorInterface, VendorMixin):
     @property
     def private(self):
         return self.repository_instance.private
+
+    # Untested yet
+    # def delete(self):
+    #     self.repository_instance.delete()

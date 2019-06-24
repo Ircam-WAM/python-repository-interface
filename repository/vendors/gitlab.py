@@ -231,3 +231,7 @@ class GitlabRepository(VendorInterface, VendorMixin):
     @property
     def private(self):
         return True if self.repository_instance.visibility == 'private' else False
+
+    def delete(self):
+        project = self.repository_instance
+        project.delete()
