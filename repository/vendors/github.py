@@ -47,6 +47,10 @@ class GithubRepository(VendorInterface, VendorMixin):
     def get_repository_instance(self):
         return self.repository_instance
 
+    def _markdown_parser(self, text, context=None):
+        """ Uses the server Markdown engine to parse """
+        return self.host_instance.render_markdown(text, context=context)
+
     def get_readme(self):
 
         repository = self.repository_instance
@@ -57,7 +61,9 @@ class GithubRepository(VendorInterface, VendorMixin):
             f = base64.standard_b64decode(f)
             return f.decode('utf-8')
 
-        path, html_content = super()._find_readme(find_func, readme_tests=self.settings['README_TESTS'])
+        path, html_content = super()._find_readme(find_func,
+                                                  md_renderer=lambda txt: self._markdown_parser(txt, context=self.repository_instance),
+                                                  readme_tests=self.settings['README_TESTS'])
 
         return (path, html_content)
 

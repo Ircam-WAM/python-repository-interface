@@ -15,7 +15,7 @@ class VendorInterface(ABC):
 
 class VendorMixin:
 
-    def _find_readme(self, vendor_method, readme_tests=[]):
+    def _find_readme(self, vendor_method, readme_tests=[], **kwargs):
 
         # vendor_method must return the raw document string (utf-8)
         # or raise an exception, and takes a sole argument that is
@@ -36,11 +36,20 @@ class VendorMixin:
                 content_type = file_type
 
         if content_type == 'md':
-            html_content = markdown.markdown(raw_content)
+            if 'md_parser' in kwargs and callable(kwargs['md_parser']):
+                html_content = kwargs['md_parser'](raw_content)
+            else:
+                html_content = markdown.markdown(raw_content)
         elif content_type == 'rst':
-            html_content = publish_parts(raw_content, writer_name='html')
-            html_content = html_content['body']
+            if 'rst_parser' in kwargs and callable(kwargs['rst_parser']):
+                html_content = kwargs['rst_parser'](raw_content)
+            else:
+                html_content = publish_parts(raw_content, writer_name='html')
+                html_content = html_content['body']
         elif content_type == 'raw':
-            html_content = '<br>'.join(raw_content.split('\n'))  # \n to <br>
+            if 'raw_parser' in kwargs and callable(kwargs['raw_parser']):
+                html_content = kwargs['raw_parser'](raw_content)
+            else:
+                html_content = '<br>'.join(raw_content.split('\n'))  # \n to <br>
 
         return (path, html_content)
