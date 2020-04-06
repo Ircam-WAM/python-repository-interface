@@ -19,6 +19,9 @@ class VendorInterface(ABC):
 
 class VendorMixin:
 
+    default_markdown_extensions = ['pymdownx.extra', 'pymdownx.magiclink', 'pymdownx.tasklist', 'mdx_truly_sane_lists']
+    default_markdown_extension_configs = {}
+
     def _rel_to_abs_links(self, html, template=None):
         """ Rewrite relative links to absolute links in a HTML string """
 
@@ -55,35 +58,44 @@ class VendorMixin:
         # or raise an exception, and takes a sole argument that is
         # the file path to check
 
-        html_content = ''
-        raw_content = ''
-        content_type = None
-        path = None
+        html_content = None
+        raw_content = None
+        readme_path = None
+        readme_format = None
 
-        for file, file_type in readme_tests:
+        # Default parsers if the method is called without a custom parser
+        default_parsers = {
+            'md': lambda raw: markdown.markdown(raw,
+                                                extensions=self.default_markdown_extensions,
+                                                extension_configs=self.default_markdown_extension_configs),
+            'rst': lambda raw: publish_parts(raw, writer_name='html')['body'],
+            'raw': lambda raw: '<br>'.join(raw.split('\n')),  # \n to <br>
+        }
+
+        for test_path, test_format in readme_tests:
             try:
-                raw_content = vendor_method(file)
-                path = file
+                raw_content = vendor_method(test_path)
+                readme_path = test_path
+                readme_format = test_format
             except Exception:
-                file = None
+                pass
             else:
-                content_type = file_type
+                break
 
-        if content_type == 'md':
-            if 'md_parser' in kwargs and callable(kwargs['md_parser']):
-                html_content = kwargs['md_parser'](raw_content)
-            else:
-                html_content = markdown.markdown(raw_content)
-        elif content_type == 'rst':
-            if 'rst_parser' in kwargs and callable(kwargs['rst_parser']):
-                html_content = kwargs['rst_parser'](raw_content)
-            else:
-                html_content = publish_parts(raw_content, writer_name='html')
-                html_content = html_content['body']
-        elif content_type == 'raw':
-            if 'raw_parser' in kwargs and callable(kwargs['raw_parser']):
-                html_content = kwargs['raw_parser'](raw_content)
-            else:
-                html_content = '<br>'.join(raw_content.split('\n'))  # \n to <br>
+        # If a README file wasn't found, return an empty string as HTML content
+        if raw_content is None or readme_path is None or readme_format is None:
+            html_content = ''
 
-        return (path, html_content)
+        # Else, parse it given its format and return the result
+        else:
+            custom_parser = '{}_parser'.format(readme_format)
+            try:
+                if custom_parser in kwargs and callable(kwargs[custom_parser]):
+                    html_content = kwargs[custom_parser](raw_content)
+                else:
+                    raise Exception()
+            except Exception:
+                # Executed wether the custom parser fails or there isn't one
+                html_content = default_parsers[readme_format](raw_content)
+
+        return (readme_path, html_content)
