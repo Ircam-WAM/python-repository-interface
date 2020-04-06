@@ -59,8 +59,10 @@ class GitlabRepository(VendorInterface, VendorMixin):
             return f.decode().decode("utf-8")
 
         path, html_content = super()._find_readme(find_func,
-                                                  md_parser=lambda txt: self._markdown_parser(txt, context=self.namespace),
                                                   readme_tests=self.settings['README_TESTS'])
+
+        html_content = self._rel_to_abs_links(html_content,
+                                              template=self.settings['ABSOLUTE_LINK_TEMPLATE'])
 
         return (path, html_content)
 
