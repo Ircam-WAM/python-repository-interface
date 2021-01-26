@@ -24,4 +24,14 @@ setup(name='python-repository-interface',
       zip_safe=False,
       include_package_data=True,
       classifiers=[],
+      install_requires=[
+        "python-gitlab==1.7.0",
+        "PyGithub==1.43.3",
+        "markdown==3.2.1",
+        "pymdown-extensions==6.3",
+        "pygments==2.6.1",
+        "mdx_truly_sane_lists==1.2",
+        "docutils==0.14",
+        "pydash",
+      ]
 )
