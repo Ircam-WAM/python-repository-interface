@@ -2,4 +2,3 @@ python-gitlab
 PyGithub
 markdown==2.6.11
 pydash
--e .
