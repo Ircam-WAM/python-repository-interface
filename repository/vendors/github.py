@@ -52,11 +52,10 @@ class GithubRepository(VendorInterface, VendorMixin):
         return self.host_instance.render_markdown(text, context=context)
 
     def get_readme(self):
-
         repository = self.repository_instance
 
         def find_func(path):
-            f = repository.get_file_contents(path, ref='master')
+            f = repository.get_file_contents(path, ref=repository.default_branch)
             f = f.content
             f = base64.standard_b64decode(f)
             return f.decode('utf-8')
@@ -124,7 +123,9 @@ class GithubRepository(VendorInterface, VendorMixin):
             latest_tags.append(tmp)
         return latest_tags
 
-    def get_archive_url(self, extension='zip', ref='master'):
+    def get_archive_url(self, extension='zip', ref=None):
+        if ref is None:
+            ref = self.repository_instance.default_branch
         path = self.settings['GITHUB_URL_ARCHIVE'].format(namespace=self.namespace,
                                                  extension=extension,
                                                  ref=ref)
@@ -219,8 +220,9 @@ class GithubRepository(VendorInterface, VendorMixin):
 
     def get_edit_url(self, path):
 
+        branch = self.repository_instance.default_branch
         path = self.settings['GITHUB_URL_EDIT'].format(namespace=self.namespace,
-                                                       branch="master",
+                                                       branch=branch,
                                                        path=path)
 
         return '{}{}'.format(self.host, path)
