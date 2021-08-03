@@ -1,6 +1,6 @@
 from .utils import VendorInterface, VendorMixin
 import gitlab
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin, quote
 import pydash as dsh
 
 
@@ -119,7 +119,7 @@ class GitlabRepository(VendorInterface, VendorMixin):
         return latest_tags
 
     def get_archive_url(self, extension='zip', ref='master'):
-        path = self.settings['GITLAB_URL_ARCHIVE'].format(namespace=self.namespace,
+        path = self.settings['GITLAB_URL_ARCHIVE'].format(namespace=quote(self.namespace, safe=''),
                                                  extension=extension,
                                                  ref=ref)
         url = '{}{}'.format(self.host, path)
