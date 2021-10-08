@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import markdown
 import re
 import os
+import bleach
 from docutils.core import publish_parts
 from urllib.parse import urlparse
 
@@ -66,8 +67,8 @@ class VendorMixin:
         # Default parsers if the method is called without a custom parser
         default_parsers = {
             'md': lambda raw: markdown.markdown(raw,
-                                                extensions=self.default_markdown_extensions,
-                                                extension_configs=self.default_markdown_extension_configs),
+                extensions=self.default_markdown_extensions,
+                extension_configs=self.default_markdown_extension_configs),
             'rst': lambda raw: publish_parts(raw, writer_name='html')['body'],
             'raw': lambda raw: '<br>'.join(raw.split('\n')),  # \n to <br>
         }
@@ -88,6 +89,19 @@ class VendorMixin:
 
         # Else, parse it given its format and return the result
         else:
+            # Clean user input with an allowlist of html tags and attributes
+            raw_content = bleach.clean(raw_content,
+                tags=[
+                    'p',
+                    'img',
+                    'audio',
+                    'source'
+                ],
+                attributes={
+                    'img': ['src', 'alt'],
+                    'audio': ['src', 'controls'],
+                    'source': ['src']
+                })
             custom_parser = '{}_parser'.format(readme_format)
             try:
                 if custom_parser in kwargs and callable(kwargs[custom_parser]):

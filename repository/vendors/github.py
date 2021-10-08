@@ -47,10 +47,6 @@ class GithubRepository(VendorInterface, VendorMixin):
     def get_repository_instance(self):
         return self.repository_instance
 
-    def _markdown_parser(self, text, context=None):
-        """ Uses the server Markdown engine to parse """
-        return self.host_instance.render_markdown(text, context=context)
-
     def get_readme(self):
         repository = self.repository_instance
 

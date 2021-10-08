@@ -46,20 +46,19 @@ class GitlabRepository(VendorInterface, VendorMixin):
     def get_repository_instance(self):
         return self.repository_instance
 
-    def _markdown_parser(self, text, context=None):
-        """ Uses the server Markdown engine to parse """
-        return self.host_instance.markdown(text=text, gfm=True, project=context)
-
     def get_readme(self):
 
         project = self.repository_instance
 
         def find_func(path):
-            f = project.files.get(file_path=path, ref='master')
+            f = project.files.get(
+                file_path=path,
+                ref='master',
+            )
             return f.decode().decode("utf-8")
 
         path, html_content = super()._find_readme(find_func,
-                                                  readme_tests=self.settings['README_TESTS'])
+                readme_tests=self.settings['README_TESTS'])
 
         html_content = self._rel_to_abs_links(html_content,
                                               template=self.settings['ABSOLUTE_LINK_TEMPLATE'])
