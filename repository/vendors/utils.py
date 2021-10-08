@@ -100,7 +100,7 @@ class VendorMixin:
                 attributes={
                     'img': ['src', 'alt'],
                     'audio': ['src', 'controls'],
-                    'source': ['src']
+                    'source': ['src', 'type']
                 })
             custom_parser = '{}_parser'.format(readme_format)
             try:
