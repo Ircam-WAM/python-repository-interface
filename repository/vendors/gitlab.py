@@ -117,10 +117,13 @@ class GitlabRepository(VendorInterface, VendorMixin):
             latest_tags.append(tmp)
         return latest_tags
 
-    def get_archive_url(self, extension='zip', ref='master'):
-        path = self.settings['GITLAB_URL_ARCHIVE'].format(namespace=quote(self.namespace, safe=''),
-                                                 extension=extension,
-                                                 ref=ref)
+    def get_archive_url(self, extension='zip', ref=None):
+        if ref is None:
+            ref = self.repository_instance.default_branch
+        path = self.settings['GITLAB_URL_ARCHIVE'].format(
+                namespace=quote(self.namespace, safe=''),
+                extension=extension,
+                ref=ref)
         url = '{}{}'.format(self.host, path)
         return url
 
