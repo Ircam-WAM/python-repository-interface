@@ -5,6 +5,7 @@ import os
 import bleach
 from docutils.core import publish_parts
 from urllib.parse import urlparse
+from bs4 import BeautifulSoup
 
 
 class VendorInterface(ABC):
@@ -18,12 +19,21 @@ class VendorInterface(ABC):
         pass
 
 
+def is_relative_url(url):
+    parsed = urlparse(url)
+    # only filtering basic anchors,
+    # stuff like "./#foobar" would pass anyway...
+    is_anchor = url[0] == "#"
+    has_netloc = bool(parsed.netloc)
+    return not has_netloc and not is_anchor
+
+
 class VendorMixin:
 
     default_markdown_extensions = [
         # pymdownx uses pygments for syntax highlighting
         # NB: code block language is not auto-detected
-        # see https://facelessuser.github.io/pymdown-extensions/extensions/superfences/#code-highlighting
+        # https://facelessuser.github.io/pymdown-extensions/extensions/superfences/#code-highlighting
         'pymdownx.extra',
         'pymdownx.magiclink',
         'pymdownx.tasklist',
@@ -31,41 +41,50 @@ class VendorMixin:
     ]
     default_markdown_extension_configs = {}
 
-    def _rel_to_abs_links(self, html, template=None):
+    def _rel_to_abs_links(self, html, default_branch="master"):
         """ Rewrite relative links to absolute links in a HTML string """
-
-        def is_relative_url(url):
-            parsed = urlparse(url)
-            is_anchor = url[0] == "#"  # Only filtering basic anchors, stuff like "./#foobar" would pass anyway...
-            has_netloc = bool(parsed.netloc)
-            return not has_netloc and not is_anchor
 
         link_pattern = r"<a[^>]*href=[\"']([^\"']*)[\"'][^>]*>.*<\/a>"
         unique_rel_links = [link for link in re.findall(link_pattern, html) if is_relative_url(link)]
+        # gives us a deduplicated list of relative links across the HTML
         unique_rel_links = list(set(unique_rel_links))
-        # ^ gives us a deduplicated list of relative links across the HTML ^
 
         for rel_link in unique_rel_links:
-            normalized_path = os.path.normpath(rel_link)  # ./README.md == doc/../README.md == README.md
+            # ./README.md == doc/../README.md == README.md
+            normalized_path = os.path.normpath(rel_link)
             if normalized_path[:3] == '../':
-                # As READMEs are always at the root (and until we use this function for something else than READMEs),
-                # if the normalized relative link begins with ../ we just ignore it as it would create a broken absolute link.
+                # As READMEs are always at the root
+                # (and until we use this function for something else than READMEs),
+                # if the normalized relative link begins with ../
+                # we just ignore it as it would create a broken absolute link.
                 continue
-            abs_link = template.format(host=self.host, namespace=self.namespace, rel_path=normalized_path)
+            # absolute URL is the same for github and gitlab
+            abs_link = f"{self.host}/{self.namespace}/blob/{default_branch}/{normalized_path}"
 
             # Using re.sub because we want to replace whole hrefs
             # which might be with single or double quotes.
-            html = re.sub(r"href=[\"']{}[\"']".format(rel_link),  # NOTE: we use the captured path and not the normalized one!
+            # NOTE: we use the captured path and not the normalized one!
+            html = re.sub(r"href=[\"']{}[\"']".format(rel_link),
                           'href="{}"'.format(abs_link),
                           html)
 
         return html
 
-    def _find_readme(self, vendor_method, readme_tests=[], **kwargs):
+    def _rel_to_abs_img(self, html, default_branch="master"):
+        soup = BeautifulSoup(html, features="html.parser")
+        for img in soup.findAll('img'):
+            url = img['src']
+            if not is_relative_url(url):
+                continue
+            normalized_path = os.path.normpath(url)
+            if normalized_path[:3] == '../':
+                continue
+            img['src'] = f"{self.host}/{self.namespace}/raw/{default_branch}/{normalized_path}"
+        return str(soup)
 
+    def _find_readme(self, vendor_method, readme_tests=[], **kwargs):
         # vendor_method must return the raw document string (utf-8)
-        # or raise an exception, and takes a sole argument that is
-        # the file path to check
+        # or raise an exception, and takes a sole argument that i the file path to check
 
         html_content = None
         raw_content = None

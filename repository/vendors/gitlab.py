@@ -63,7 +63,14 @@ class GitlabRepository(VendorInterface, VendorMixin):
             readme_tests=self.settings['README_TESTS'],
         )
 
+        # Replace relative links by absolute links in HTML
         html_content = self._rel_to_abs_links(
+            html_content,
+            default_branch=branch,
+        )
+
+        # Replace relative image URL with absolute URL
+        html_content = self._rel_to_abs_img(
             html_content,
             default_branch=branch,
         )
