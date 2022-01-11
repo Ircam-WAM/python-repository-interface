@@ -49,11 +49,12 @@ class GitlabRepository(VendorInterface, VendorMixin):
     def get_readme(self):
 
         project = self.repository_instance
+        branch = self.repository_instance.default_branch
 
         def find_func(path):
             f = project.files.get(
                 file_path=path,
-                ref='master',
+                ref=branch,
             )
             return f.decode().decode("utf-8")
 
@@ -236,9 +237,11 @@ class GitlabRepository(VendorInterface, VendorMixin):
 
     def get_edit_url(self, path):
 
-        path = self.settings['GITLAB_URL_EDIT'].format(namespace=self.namespace,
-                                                       branch="master",
-                                                       path=path)
+        path = self.settings['GITLAB_URL_EDIT'].format(
+            namespace=self.namespace,
+            branch=self.repository_instance.default_branch,
+            path=path
+        )
 
         return '{}{}'.format(self.host, path)
 
