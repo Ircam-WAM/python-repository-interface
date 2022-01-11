@@ -5,6 +5,7 @@ Interface with several repository vendors for common operations.
 ## Vendors
 
   - Gitlab
+  - Github
 
 ## Operations
 
