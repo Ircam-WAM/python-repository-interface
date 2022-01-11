@@ -57,12 +57,16 @@ class GithubRepository(VendorInterface, VendorMixin):
             return f.decode('utf-8')
 
         # Finds readme and returns HTML
-        path, html_content = super()._find_readme(find_func,
-                                                  readme_tests=self.settings['README_TESTS'])
+        path, html_content = super()._find_readme(
+                find_func,
+                readme_tests=self.settings['README_TESTS']
+        )
 
         # Replace relative links by absolute links in HTML
-        html_content = self._rel_to_abs_links(html_content,
-                                              template=self.settings['ABSOLUTE_LINK_TEMPLATE'])
+        html_content = self._rel_to_abs_links(
+            html_content,
+            default_branch=repository.default_branch
+        )
 
         return (path, html_content)
 
