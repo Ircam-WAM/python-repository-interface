@@ -73,7 +73,7 @@ class VendorMixin:
     def _process_img(self, html, default_branch="master"):
         soup = BeautifulSoup(html, features="html.parser")
         for img in soup.findAll('img'):
-            if not hasattr(img, 'src'):
+            if 'src' not in img:
                 continue
             # Github replaces blob URLs. e.g.:
             # - "https://github.com/COSIMA/logo/blob/master/png/logo_word.png"
