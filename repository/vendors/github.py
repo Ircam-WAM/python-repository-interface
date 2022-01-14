@@ -68,8 +68,7 @@ class GithubRepository(VendorInterface, VendorMixin):
             default_branch=repository.default_branch
         )
 
-        # Replace relative image URL with absolute URL
-        html_content = self._rel_to_abs_img(
+        html_content = self._process_img(
             html_content,
             default_branch=repository.default_branch
         )

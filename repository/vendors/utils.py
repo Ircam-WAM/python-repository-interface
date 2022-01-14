@@ -70,9 +70,20 @@ class VendorMixin:
 
         return html
 
-    def _rel_to_abs_img(self, html, default_branch="master"):
+    def _process_img(self, html, default_branch="master"):
         soup = BeautifulSoup(html, features="html.parser")
         for img in soup.findAll('img'):
+            if not hasattr(img, 'src'):
+                continue
+            # Github replaces blob URLs. e.g.:
+            # - "https://github.com/COSIMA/logo/blob/master/png/logo_word.png"
+            # + "https://github.com/COSIMA/logo/raw/master/png/logo_word.png"
+            img['src'] = re.sub(
+                r"^https?:\/\/github.com/([^\/]+\/[^\/]+)\/blob\/(.*)$",
+                r"https://github.com/\g<1>/raw/\g<2>",
+                img['src']
+            )
+            # relative URLs need to be absolute
             url = img['src']
             if not is_relative_url(url):
                 continue

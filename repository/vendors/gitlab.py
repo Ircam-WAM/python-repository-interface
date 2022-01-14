@@ -69,8 +69,7 @@ class GitlabRepository(VendorInterface, VendorMixin):
             default_branch=branch,
         )
 
-        # Replace relative image URL with absolute URL
-        html_content = self._rel_to_abs_img(
+        html_content = self._process_img(
             html_content,
             default_branch=branch,
         )
