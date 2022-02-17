@@ -160,8 +160,9 @@ class VendorMixin:
                     'audio',
                     'source',
                     'details',
-                    'summary'
+                    'summary',
 
+                    # svg tags
                     'svg',
                     'path',
                     'circle',
@@ -178,6 +179,7 @@ class VendorMixin:
 
                     'audio': ['src', 'controls'],
                     'source': ['src', 'type'],
+
                     'svg': ['role', 'viewBox', 'xmlns'],
                     'path': ['d'],
                     'circle': ['cx', 'cy', 'r'],
