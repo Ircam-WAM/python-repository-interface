@@ -154,10 +154,18 @@ class VendorMixin:
                     'img',
                     'a',
                     'sub', 'sup',
+                    'table', 'thead', 'tbody', 'tr', 'th', 'td',
 
                     # Extra tags allowed by user-defined HTML
                     'audio',
-                    'source'
+                    'source',
+                    'details',
+                    'summary'
+
+                    'svg',
+                    'path',
+                    'circle',
+                    'rect'
                 ],
                 attributes={
                     # id is mandatory for link anchors
@@ -165,9 +173,15 @@ class VendorMixin:
                     '*': ['id', 'class'],
                     'img': ['src', 'alt', 'title'],
                     'a': ['href', 'alt', 'title'],
+                    'th': ['align'],
+                    'td': ['align'],
 
                     'audio': ['src', 'controls'],
-                    'source': ['src', 'type']
+                    'source': ['src', 'type'],
+                    'svg': ['role', 'viewBox', 'xmlns'],
+                    'path': ['d'],
+                    'circle': ['cx', 'cy', 'r'],
+                    'rect': ['x', 'y', 'width', 'height', 'rx', 'ry']
                 })
 
         return (readme_path, html_content)
