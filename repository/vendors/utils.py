@@ -20,6 +20,8 @@ class VendorInterface(ABC):
 
 
 def is_relative_url(url):
+    if len(url) == 0:
+        return False
     parsed = urlparse(url)
     # only filtering basic anchors,
     # stuff like "./#foobar" would pass anyway...
