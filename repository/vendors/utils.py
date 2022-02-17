@@ -161,12 +161,6 @@ class VendorMixin:
                     'source',
                     'details',
                     'summary',
-
-                    # svg tags
-                    'svg',
-                    'path',
-                    'circle',
-                    'rect'
                 ],
                 attributes={
                     # id is mandatory for link anchors
@@ -179,11 +173,6 @@ class VendorMixin:
 
                     'audio': ['src', 'controls'],
                     'source': ['src', 'type'],
-
-                    'svg': ['role', 'viewBox', 'xmlns'],
-                    'path': ['d'],
-                    'circle': ['cx', 'cy', 'r'],
-                    'rect': ['x', 'y', 'width', 'height', 'rx', 'ry']
                 })
 
         return (readme_path, html_content)
