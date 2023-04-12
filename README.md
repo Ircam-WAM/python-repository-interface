@@ -10,3 +10,9 @@ Interface with several repository vendors for common operations.
 ## Operations
 
 See [repository/repository.py](repository/repository.py) methods.
+
+# Authors
+
+- Guillaume Pellerin
+- Martin Desrumaux
+- Raphaël Yancey
