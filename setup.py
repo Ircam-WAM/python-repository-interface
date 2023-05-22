@@ -12,7 +12,7 @@ setup(name='python-repository-interface',
       include_package_data=True,
       classifiers=[],
       install_requires=[
-        "python-gitlab==1.7.0",
+        "python-gitlab==3.1.1",
         "PyGithub==1.58.2",
         "markdown==3.3.6",
         "pymdown-extensions==9.2",
