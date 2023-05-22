@@ -18,7 +18,7 @@ setup(name='python-repository-interface',
         "pymdown-extensions==6.3",
         "pygments==2.7.4",
         "mdx_truly_sane_lists==1.2",
-        "docutils==0.14",
+        "docutils==0.18.1",
         "pydash",
         "bleach==4.1.0",
         "beautifulsoup4==4.10.0"
