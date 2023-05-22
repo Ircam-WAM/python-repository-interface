@@ -1,22 +1,9 @@
 from setuptools import setup, find_packages
-import subprocess
-
-
-def get_long_desc():
-    """Use Pandoc to convert the readme to ReST for the PyPI."""
-    try:
-        return subprocess.check_output(['pandoc', '-f', 'markdown', '-t', 'rst', 'README.mdown'])
-    except Exception:
-        print("WARNING: The long readme wasn't converted properly")
-
-
-readme = open('README.md', 'r')
-long_desc = readme.read()
 
 setup(name='python-repository-interface',
-      version='0.0.1',
+      version='0.1.0',
       description='Interface with several repositories vendors for common operations',
-      long_description=long_desc,
+      long_description='Interface with several repositories vendors for common operations',
       author='Raphaël Yancey',
       author_email='pypi@raphaelyancey.fr',
       url='https://github.com/Ircam-Web/python-repository-interface',
