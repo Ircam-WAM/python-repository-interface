@@ -51,7 +51,7 @@ class GithubRepository(VendorInterface, VendorMixin):
         repository = self.repository_instance
 
         def find_func(path):
-            f = repository.get_file_contents(path, ref=repository.default_branch)
+            f = repository.get_contents(path, ref=repository.default_branch)
             f = f.content
             f = base64.standard_b64decode(f)
             return f.decode('utf-8')
