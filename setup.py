@@ -14,7 +14,7 @@ setup(name='python-repository-interface',
       install_requires=[
         "python-gitlab==1.7.0",
         "PyGithub==1.58.2",
-        "markdown==3.2.1",
+        "markdown==3.3.6",
         "pymdown-extensions==9.2",
         "pygments==2.11.2",
         "mdx_truly_sane_lists==1.2",
