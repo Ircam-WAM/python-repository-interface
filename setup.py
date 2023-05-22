@@ -33,7 +33,7 @@ setup(name='python-repository-interface',
         "mdx_truly_sane_lists==1.2",
         "docutils==0.14",
         "pydash",
-        "bleach==4.x",
+        "bleach==4.1.0",
         "beautifulsoup4==4.10.0"
       ]
 )
